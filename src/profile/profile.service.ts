@@ -7,7 +7,7 @@ import { Profile, ProfileDocument } from './schemas/profile.schema';
 export class ProfileService {
   constructor(
     @InjectModel(Profile.name) private readonly ProfileModel: Model<ProfileDocument>,
-  ) {}
+  ) { }
 
   async create(data: Partial<Profile>): Promise<ProfileDocument> {
     const createdProfile = new this.ProfileModel(data);
@@ -15,20 +15,26 @@ export class ProfileService {
   }
 
   async findAll(): Promise<ProfileDocument[]> {
-    return this.ProfileModel.aggregate([
-      { $lookup: { from: 'users', localField: 'UserId', foreignField: '_id', as: 'user' } },
-      { $unwind: '$user' },
-      {
-        $project: {
-          _id: 1,
-          UserName: '$user.Name',
-          BOD: 1,
-          Address: 1,
-          PhoneNo: 1,
-          profileImage: 1
+    try {
+      const profiles = await this.ProfileModel.aggregate([
+        { $lookup: { from: 'users', localField: 'UserId', foreignField: '_id', as: 'user' } },
+        { $unwind: { path: '$user', preserveNullAndEmptyArrays: true } },
+        {
+          $project: {
+            _id: 1,
+            UserName: { $ifNull: ['$user.Name', 'No User Found'] },
+            BOD: 1,
+            Address: 1,
+            PhoneNo: 1,
+            profileImage: 1
+          }
         }
-      }
-    ]);
+      ]);
+
+      return profiles;
+    } catch (error) {
+      throw new NotFoundException('Error fetching profiles: ' + error.message);
+    }
   }
 
   async findOne(id: string): Promise<ProfileDocument> {

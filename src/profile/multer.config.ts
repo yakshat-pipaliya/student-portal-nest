@@ -2,8 +2,7 @@ import { diskStorage } from 'multer';
 import { extname } from 'path';
 import { existsSync, mkdirSync } from 'fs';
 
-// Create uploads directory if it doesn't exist
-const uploadDir = './uploads/profile';
+const uploadDir = '/var/www/html/profile';
 if (!existsSync(uploadDir)) {
   mkdirSync(uploadDir, { recursive: true });
 }
@@ -27,6 +26,6 @@ export const multerConfig = {
     callback(null, true);
   },
   limits: {
-    fileSize: 10 * 1024 * 1024, // Increased to 10MB
+    fileSize: 10 * 1024 * 1024, 
   },
-}; 
+};

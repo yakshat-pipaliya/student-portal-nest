@@ -8,7 +8,7 @@ export class User {
   @Prop({ required: true })
   Name: string;
 
-  @Prop({ required: true , unique: true })
+  @Prop({ required: true , unique: true , match:/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/})
   Email: string;
 
   @Prop({ required: true })

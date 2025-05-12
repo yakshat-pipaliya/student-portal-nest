@@ -1,17 +1,22 @@
-import { Controller, Get, Post, Body, Param, Delete, Patch, UseInterceptors, UploadedFile, BadRequestException, InternalServerErrorException } from '@nestjs/common';
+import {
+  Controller, Get, Post, Body, Param, Delete, Patch,
+  UseInterceptors, UploadedFile, BadRequestException, InternalServerErrorException
+} from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ProfileService } from './profile.service';
 import { Profile } from './schemas/profile.schema';
 import { multerConfig } from './multer.config';
+import { CreateProfileDto } from './dto/create-profile.dto';
+import { UpdateProfileDto } from './dto/update-profile.dto';
 
 @Controller('profile')
 export class ProfileController {
-  constructor(private readonly profileService: ProfileService) { }
+  constructor(private readonly profileService: ProfileService) {}
 
   @Post()
   @UseInterceptors(FileInterceptor('profileImage', multerConfig))
   async create(
-    @Body() data: Partial<Profile>,
+    @Body() data: Partial<CreateProfileDto>,
     @UploadedFile() file: Express.Multer.File
   ) {
     try {
@@ -19,12 +24,10 @@ export class ProfileController {
         throw new BadRequestException('Profile image is required');
       }
 
-      data.profileImage = `/uploads/profile/${file.filename}`;
+     data.profileImage = `/uploads/profile/${file.filename}`;
       return await this.profileService.create(data);
     } catch (error) {
-      if (error instanceof BadRequestException) {
-        throw error;
-      }
+      if (error instanceof BadRequestException) throw error;
       throw new InternalServerErrorException('Failed to upload profile image: ' + error.message);
     }
   }
@@ -43,7 +46,7 @@ export class ProfileController {
   @UseInterceptors(FileInterceptor('profileImage', multerConfig))
   async update(
     @Param('id') id: string,
-    @Body() data: Partial<Profile>,
+    @Body() data: Partial<UpdateProfileDto>,
     @UploadedFile() file: Express.Multer.File
   ) {
     try {

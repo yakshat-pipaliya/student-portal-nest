@@ -1,15 +1,15 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException , UnauthorizedException} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { User, UserDocument } from './schemas/user.schema';
 import * as bcrypt from 'bcrypt';
-import { AuthService } from  '../auth/auth.service';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class UserService {
   constructor(
-    @InjectModel(User.name) private readonly UserModel: Model<UserDocument>,
-     private readonly authService: AuthService,
+     @InjectModel(User.name) private readonly UserModel: Model<UserDocument>,
+    private jwtService: JwtService
   ) {}
 
   async findByEmail(email: string): Promise<UserDocument | null> {
@@ -25,20 +25,25 @@ export class UserService {
     return await createdUser.save();
   }
 
-  async login(email: string, password: string): Promise<{user: UserDocument;accessToken: string}> {
-    const user = await this.findByEmail(email);
+async login(Email: string, Password: string): Promise<{ user: UserDocument, access_token: string, }> {
+
+
+    const user = await this.findByEmail(Email);
     if (!user) {
-      throw new NotFoundException('Invalid credentials');
+      throw new UnauthorizedException('Invalid credentials');
     }
-    const isPasswordValid = await bcrypt.compare(password, user.Password);
+    const isPasswordValid = await bcrypt.compare(Password, user.Password);
     if (!isPasswordValid) {
-      throw new NotFoundException('Invalid credentials');
+     throw new UnauthorizedException('Invalid credentials');
     }
-   const accessToken = this.authService.generateToken({
-      userId: user._id,
-      email: user.Email,
-    });
-    return { user, accessToken };
+    const payload = { sub: user._id, email: user.Email };
+    
+  const access_token = await this.jwtService.signAsync(payload);
+
+  return {
+    user,
+    access_token,
+  };
   }
 
   async findAll(): Promise<UserDocument[]> {
