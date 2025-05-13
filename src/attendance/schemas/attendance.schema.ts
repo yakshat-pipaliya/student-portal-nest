@@ -12,7 +12,7 @@ export class Attendance {
   @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'Course' , required: true })
   CourseId: MongooseSchema.Types.ObjectId;
 
-  @Prop({ required: true,})
+  @Prop({ required: true, unique: true })
   Date: Date;
 
   @Prop({ enum: ['Present', 'Absent'], required: true,})

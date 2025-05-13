@@ -12,7 +12,7 @@ import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
-      ServeStaticModule.forRoot({
+    ServeStaticModule.forRoot({
       rootPath: '/var/www/html/profile',
       serveRoot: '/uploads/profile',
     }),

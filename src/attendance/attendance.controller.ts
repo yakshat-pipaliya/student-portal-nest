@@ -1,35 +1,48 @@
-import { Controller, Get, Post, Body, Param, Delete, Patch } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Delete, Patch, UseGuards, Req, } from '@nestjs/common';
 import { AttendanceService } from './attendance.service';
 import { Attendance } from './schemas/attendance.schema';
+import { CreateAttendanceDto } from './dto/create-attendance.dto';
+import { UpdateAttendanceDto } from './dto/update-attendance.dto';
+import { AuthGuard } from '@nestjs/passport';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 
+@ApiTags('attendance')
+@ApiBearerAuth('access-token')
 @Controller('attendance')
 export class AttendanceController {
-
-    constructor(private readonly AttendanceService: AttendanceService) { }
+    constructor(private readonly attendanceService: AttendanceService) { }
 
     @Post()
-    create(@Body() data: Partial<Attendance>) {
-        return this.AttendanceService.create(data);
+    @UseGuards(AuthGuard('jwt'))
+    create(@Body() createAttendanceDto: CreateAttendanceDto) {
+        return this.attendanceService.create(createAttendanceDto);
     }
 
     @Get()
     findAll() {
-        return this.AttendanceService.findAll();
+        return this.attendanceService.findAll();
     }
 
     @Get(':id')
     findOne(@Param('id') id: string) {
-        return this.AttendanceService.findOne(id);
+        return this.attendanceService.findOne(id);
     }
 
     @Patch(':id')
-    update(@Param('id') id: string, @Body() data: Partial<Attendance>) {
-        return this.AttendanceService.update(id, data);
+    @UseGuards(AuthGuard('jwt'))
+    update(
+        @Param('id') id: string,
+        @Body() updateAttendanceDto: UpdateAttendanceDto,
+        @Req() req,
+    ) {
+        updateAttendanceDto['updatedAt'] = new Date();
+        return this.attendanceService.update(id, updateAttendanceDto);
     }
 
     @Delete(':id')
-    remove(@Param('id') id: string) {
-        return this.AttendanceService.remove(id);
-
+    @UseGuards(AuthGuard('jwt'))
+    remove(@Param('id') id: string, @Req() req) {
+        return this.attendanceService.remove(id);
     }
+
 }

@@ -1,26 +1,44 @@
 import { IsString, IsEmail, IsEnum, MinLength, IsOptional } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
+import { messages, userRoles } from '../../common/messages';
 
 export class UpdateUserDto {
-  @ApiProperty({ example: 'John Doe', description: 'The name of the user', required: false })
+  @ApiProperty({
+    example: messages.nameRequired.example,
+    description: messages.nameRequired.description,
+    required: false
+  })
   @IsOptional()
-  @IsString()
-  @MinLength(2)
+  @IsString({ message: messages.nameRequired.message })
+  @MinLength(2, { message: messages.nameMinLength.message })
   Name?: string;
 
-  @ApiProperty({ example: 'john@example.com', description: 'The email of the user', required: false })
+  @ApiProperty({
+    example: messages.emailInvalid.example,
+    description: messages.emailInvalid.description,
+    required: false
+  })
   @IsOptional()
-  @IsEmail()
+  @IsEmail({}, { message: messages.emailInvalid.message })
   Email?: string;
 
-  @ApiProperty({ example: 'password123', description: 'The password of the user', required: false })
+  @ApiProperty({
+    example: messages.passwordRequired.example,
+    description: messages.passwordRequired.description,
+    required: false
+  })
   @IsOptional()
-  @IsString()
-  @MinLength(6)
+  @IsString({ message: messages.passwordRequired.message })
+  @MinLength(6, { message: messages.passwordMinLength.message })
   Password?: string;
 
-  @ApiProperty({ example: 'Student', description: 'The role of the user', enum: ['Student', 'Teacher'], required: false })
+  @ApiProperty({
+    example: messages.roleRequired.example,
+    description: messages.roleRequired.description,
+    enum: userRoles,
+    required: false
+  })
   @IsOptional()
-  @IsEnum(['Student', 'Teacher'])
+  @IsEnum(userRoles, { message: messages.roleInvalid.message })
   Role?: string;
-} 
+}

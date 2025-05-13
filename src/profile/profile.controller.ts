@@ -11,12 +11,12 @@ import { UpdateProfileDto } from './dto/update-profile.dto';
 
 @Controller('profile')
 export class ProfileController {
-  constructor(private readonly profileService: ProfileService) {}
+  constructor(private readonly profileService: ProfileService) { }
 
   @Post()
   @UseInterceptors(FileInterceptor('profileImage', multerConfig))
   async create(
-    @Body() data: Partial<CreateProfileDto>,
+    @Body() data: CreateProfileDto,
     @UploadedFile() file: Express.Multer.File
   ) {
     try {
@@ -24,7 +24,7 @@ export class ProfileController {
         throw new BadRequestException('Profile image is required');
       }
 
-     data.profileImage = `/uploads/profile/${file.filename}`;
+      data.profileImage = `/uploads/profile/${file.filename}`;
       return await this.profileService.create(data);
     } catch (error) {
       if (error instanceof BadRequestException) throw error;
@@ -46,7 +46,7 @@ export class ProfileController {
   @UseInterceptors(FileInterceptor('profileImage', multerConfig))
   async update(
     @Param('id') id: string,
-    @Body() data: Partial<UpdateProfileDto>,
+    @Body() data: UpdateProfileDto,
     @UploadedFile() file: Express.Multer.File
   ) {
     try {
@@ -58,6 +58,7 @@ export class ProfileController {
       throw new InternalServerErrorException('Failed to update profile: ' + error.message);
     }
   }
+
 
   @Delete(':id')
   remove(@Param('id') id: string) {
