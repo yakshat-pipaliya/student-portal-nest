@@ -2,6 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { Profile, ProfileDocument } from './schemas/profile.schema';
+import { messages } from '../common/messages';
 
 @Injectable()
 export class ProfileService {
@@ -33,7 +34,7 @@ export class ProfileService {
 
       return profiles;
     } catch (error) {
-      throw new NotFoundException('Error fetching profiles: ' + error.message);
+      throw new NotFoundException(messages.profileNotFound.message + ': ' + error.message);
     }
   }
 
@@ -55,7 +56,7 @@ export class ProfileService {
     ]).exec();
 
     if (!result || result.length === 0) {
-      throw new NotFoundException('Profile not found');
+      throw new NotFoundException(messages.profileNotFound.message);
     }
 
     return result[0];
@@ -67,7 +68,7 @@ export class ProfileService {
       runValidators: true,
     }).exec();
     if (!updatedProfile) {
-      throw new NotFoundException(`Profile not found`);
+      throw new NotFoundException(messages.profileNotFound.message);
     }
     return updatedProfile;
   }
@@ -75,7 +76,7 @@ export class ProfileService {
   async remove(id: string): Promise<ProfileDocument> {
     const deletedProfile = await this.ProfileModel.findByIdAndDelete(id).exec();
     if (!deletedProfile) {
-      throw new NotFoundException(`Profile not found`);
+      throw new NotFoundException(messages.profileNotFound.message);
     }
     return deletedProfile;
   }

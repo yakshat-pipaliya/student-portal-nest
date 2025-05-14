@@ -2,6 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Institute, InstituteDocument } from './schemas/institute.schema';
+import { messages } from '../common/messages';
 
 @Injectable()
 export class InstituteService {
@@ -21,7 +22,7 @@ export class InstituteService {
   async findOne(id: string): Promise<InstituteDocument> {
     const institute = await this.instituteModel.findById(id).exec();
     if (!institute) {
-      throw new NotFoundException('Institute not found');
+      throw new NotFoundException(messages.notFound.message);
     }
     return institute;
   }
@@ -29,7 +30,7 @@ export class InstituteService {
   async update(id: string, data: Partial<Institute>): Promise<InstituteDocument> {
     const current = await this.instituteModel.findById(id).exec();
     if (!current) {
-      throw new NotFoundException('Institute not found');
+      throw new NotFoundException(messages.notFound.message);
     }
 
     const updateData: Partial<Institute> = {};
@@ -57,7 +58,7 @@ export class InstituteService {
     }).exec();
 
     if (!updated) {
-      throw new NotFoundException('Failed to update institute');
+      throw new NotFoundException(messages.error.message);
     }
 
     return updated;
@@ -66,7 +67,7 @@ export class InstituteService {
   async remove(id: string): Promise<InstituteDocument> {
     const deleted = await this.instituteModel.findByIdAndDelete(id).exec();
     if (!deleted) {
-      throw new NotFoundException('Institute not found');
+      throw new NotFoundException(messages.notFound.message);
     }
     return deleted;
   }
@@ -74,7 +75,7 @@ export class InstituteService {
   async removeImage(id: string, image: string): Promise<InstituteDocument> {
     const institute = await this.instituteModel.findById(id).exec();
     if (!institute) {
-      throw new NotFoundException('Institute not found');
+      throw new NotFoundException(messages.notFound.message);
     }
     const updatedImages = (institute.instituteImages || []).filter(img => img !== image);
     institute.instituteImages = updatedImages;

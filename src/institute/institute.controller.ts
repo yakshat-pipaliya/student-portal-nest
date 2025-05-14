@@ -8,6 +8,7 @@ import { multerConfig } from './multer.config';
 import { CreateInstituteDto } from './dto/create-institute.dto';
 import { UpdateInstituteDto } from './dto/update-institute.dto';
 import { ApiBody, ApiConsumes, ApiTags, ApiOperation, ApiParam, ApiResponse } from '@nestjs/swagger';
+import { messages } from '../common/messages';
 
 @ApiTags('Institute')
 @Controller('institute')
@@ -23,7 +24,7 @@ export class InstituteController {
     @UploadedFiles() files: Express.Multer.File[],
   ) {
     if (!files || files.length === 0) {
-      throw new BadRequestException('At least one institute image is required');
+      throw new BadRequestException(messages.fileUploadFailed.message);
     }
 
     createInstituteDto['instituteImages'] = files.map((file) => `/uploads/institute/${file.filename}`);
@@ -71,7 +72,7 @@ export class InstituteController {
     @Body('image') image: string
   ) {
     if (!image) {
-      throw new BadRequestException('Image is required');
+      throw new BadRequestException(messages.fileUploadFailed.message);
     }
     return this.instituteService.removeImage(id, image);
   }

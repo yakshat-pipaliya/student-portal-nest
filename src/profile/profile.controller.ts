@@ -9,6 +9,7 @@ import { multerConfig } from './multer.config';
 import { CreateProfileDto } from './dto/create-profile.dto';
 import { UpdateProfileDto } from './dto/update-profile.dto';
 import { ApiBody, ApiConsumes, ApiTags } from '@nestjs/swagger';
+import { messages } from '../common/messages';
 
 @ApiTags('Profile')
 @Controller('profile')
@@ -25,14 +26,14 @@ export class ProfileController {
   ) {
     try {
       if (!file) {
-        throw new BadRequestException('Profile image is required');
+        throw new BadRequestException(messages.fileUploadFailed.message);
       }
 
       data.profileImage = `/uploads/profile/${file.filename}`;
       return await this.profileService.create(data);
     } catch (error) {
       if (error instanceof BadRequestException) throw error;
-      throw new InternalServerErrorException('Failed to upload profile image: ' + error.message);
+      throw new InternalServerErrorException(messages.profileImageUpdateFailed.message + ': ' + error.message);
     }
   }
 
@@ -62,7 +63,7 @@ export class ProfileController {
 
       return await this.profileService.update(id, data);
     } catch (error) {
-      throw new InternalServerErrorException('Failed to update profile: ' + error.message);
+      throw new InternalServerErrorException(messages.profileImageUpdateFailed.message + ': ' + error.message);
     }
   }
 

@@ -2,6 +2,8 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model , Types} from 'mongoose';
 import { Attendance, AttendanceDocument } from './schemas/attendance.schema';
+import { messages } from '../common/messages';
+
 @Injectable()
 export class AttendanceService {
 
@@ -56,7 +58,7 @@ export class AttendanceService {
     ]).exec();
   
     if (!result || result.length === 0) {
-      throw new NotFoundException('Attendance data not found');
+      throw new NotFoundException(messages.attendanceNotFound.message);
     }
   
     return result[0];
@@ -68,7 +70,7 @@ export class AttendanceService {
       runValidators: true,
     }).exec();
     if (!updatedUser) {
-      throw new NotFoundException(`Attendance data  not found`);
+      throw new NotFoundException(messages.attendanceNotFound.message);
     }
     return updatedUser;
   }
@@ -76,7 +78,7 @@ export class AttendanceService {
   async remove(id: string): Promise<AttendanceDocument> {
     const deletedUser = await this.AttendanceModel.findByIdAndDelete(id).exec();
     if (!deletedUser) {
-      throw new NotFoundException(`Attendance data  not found`);
+      throw new NotFoundException(messages.attendanceNotFound.message);
     }
     return deletedUser;
   }
