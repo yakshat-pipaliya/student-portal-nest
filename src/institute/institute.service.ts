@@ -70,4 +70,15 @@ export class InstituteService {
     }
     return deleted;
   }
+
+  async removeImage(id: string, image: string): Promise<InstituteDocument> {
+    const institute = await this.instituteModel.findById(id).exec();
+    if (!institute) {
+      throw new NotFoundException('Institute not found');
+    }
+    const updatedImages = (institute.instituteImages || []).filter(img => img !== image);
+    institute.instituteImages = updatedImages;
+    await institute.save();
+    return institute;
+  }
 }

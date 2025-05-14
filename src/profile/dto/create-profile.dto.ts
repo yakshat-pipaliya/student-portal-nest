@@ -4,7 +4,7 @@ import { ObjectId } from 'mongoose';
 
 export class CreateProfileDto {
   @ApiProperty({
-    example: '60d3b41abd7f00001f1d2b63', 
+    example: '60d3b41abd7f00001f1d2b63',
     description: 'The unique identifier of the user (referenced from User)',
   })
   @IsMongoId()
@@ -25,16 +25,17 @@ export class CreateProfileDto {
   Address: string;
 
   @ApiProperty({
-    example: '9499870550',
+    example: '+919499870550',
     description: 'The phone number of the user',
   })
   @IsPhoneNumber()
   PhoneNo: Number;
 
   @ApiProperty({
-    example: 'https://example.com/profile-image.jpg',
-    description: 'The URL of the profile image',
+    type: [String],
+    format: 'binary',
     required: false,
   })
   profileImage?: string;
+
 }

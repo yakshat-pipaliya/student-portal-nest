@@ -8,13 +8,17 @@ import { Profile } from './schemas/profile.schema';
 import { multerConfig } from './multer.config';
 import { CreateProfileDto } from './dto/create-profile.dto';
 import { UpdateProfileDto } from './dto/update-profile.dto';
+import { ApiBody, ApiConsumes, ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Profile')
 @Controller('profile')
 export class ProfileController {
   constructor(private readonly profileService: ProfileService) { }
 
   @Post()
   @UseInterceptors(FileInterceptor('profileImage', multerConfig))
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({ type: CreateProfileDto })
   async create(
     @Body() data: CreateProfileDto,
     @UploadedFile() file: Express.Multer.File
@@ -44,15 +48,18 @@ export class ProfileController {
 
   @Patch(':id')
   @UseInterceptors(FileInterceptor('profileImage', multerConfig))
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({ type: UpdateProfileDto })
   async update(
     @Param('id') id: string,
     @Body() data: UpdateProfileDto,
-    @UploadedFile() file: Express.Multer.File
+    @UploadedFile() file: Express.Multer.File,
   ) {
     try {
       if (file) {
         data.profileImage = `/uploads/profile/${file.filename}`;
       }
+
       return await this.profileService.update(id, data);
     } catch (error) {
       throw new InternalServerErrorException('Failed to update profile: ' + error.message);

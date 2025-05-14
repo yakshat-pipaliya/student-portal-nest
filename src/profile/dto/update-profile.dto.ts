@@ -1,15 +1,17 @@
 import { IsString, IsDateString, IsMongoId, IsPhoneNumber, IsOptional } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { ObjectId } from 'mongoose';
+import { Transform } from 'class-transformer';
 
 export class UpdateProfileDto {
   @ApiProperty({
-    example: '60d3b41abd7f00001f1d2b63', 
+    example: '60d3b41abd7f00001f1d2b63',
     description: 'The unique identifier of the user (referenced from User)',
     required: false,
   })
   @IsMongoId()
   @IsOptional()
+  @Transform(({ value }) => value === '' ? undefined : value)
   UserId?: ObjectId;
 
   @ApiProperty({
@@ -19,6 +21,7 @@ export class UpdateProfileDto {
   })
   @IsDateString()
   @IsOptional()
+  @Transform(({ value }) => value === '' ? undefined : value)
   BOD?: Date;
 
   @ApiProperty({
@@ -28,6 +31,7 @@ export class UpdateProfileDto {
   })
   @IsString()
   @IsOptional()
+  @Transform(({ value }) => value === '' ? undefined : value)
   Address?: string;
 
   @ApiProperty({
@@ -37,14 +41,14 @@ export class UpdateProfileDto {
   })
   @IsPhoneNumber()
   @IsOptional()
+  @Transform(({ value }) => value === '' ? undefined : value)
   PhoneNo?: Number;
 
   @ApiProperty({
-    example: 'https://example.com/profile-image.jpg',
-    description: 'The URL of the profile image',
+    type: [String],
+    format: 'binary',
     required: false,
   })
-  @IsString()
   @IsOptional()
   profileImage?: string;
 }

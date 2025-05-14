@@ -7,7 +7,7 @@ import { InstituteService } from './institute.service';
 import { multerConfig } from './multer.config';
 import { CreateInstituteDto } from './dto/create-institute.dto';
 import { UpdateInstituteDto } from './dto/update-institute.dto';
-import { ApiBody, ApiConsumes, ApiTags } from '@nestjs/swagger';
+import { ApiBody, ApiConsumes, ApiTags, ApiOperation, ApiParam, ApiResponse } from '@nestjs/swagger';
 
 @ApiTags('Institute')
 @Controller('institute')
@@ -26,9 +26,7 @@ export class InstituteController {
       throw new BadRequestException('At least one institute image is required');
     }
 
-    createInstituteDto['instituteImages'] = files.map(
-      (file) => `/uploads/institute/${file.filename}`,
-    );
+    createInstituteDto['instituteImages'] = files.map((file) => `/uploads/institute/${file.filename}`);
 
     return this.instituteService.create(createInstituteDto);
   }
@@ -62,5 +60,19 @@ export class InstituteController {
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.instituteService.remove(id);
+  }
+
+  @Delete(':id/image')
+  @ApiOperation({ summary: 'Delete a single image from an institute' })
+  @ApiParam({ name: 'id', description: 'Institute ID' })
+  @ApiBody({ schema: { properties: { image: { type: 'string', example: '/uploads/institute/filename.jpg' } } } })
+  async removeImage(
+    @Param('id') id: string,
+    @Body('image') image: string
+  ) {
+    if (!image) {
+      throw new BadRequestException('Image is required');
+    }
+    return this.instituteService.removeImage(id, image);
   }
 }
