@@ -34,7 +34,7 @@ export class CreateProfileDto {
   @ApiProperty({
     example: 'https://example.com/profile-image.jpg',
     description: 'The URL of the profile image',
+    required: false,
   })
-  @IsString()
-  profileImage: string;
+  profileImage?: string;
 }

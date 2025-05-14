@@ -8,6 +8,7 @@ import { AttendanceModule } from './attendance/attendance.module';
 import { ProfileModule } from './profile/profile.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { AuthModule } from './auth/auth.module';
+import { InstituteModule } from './institute/institute.module';
 
 
 @Module({
@@ -15,6 +16,10 @@ import { AuthModule } from './auth/auth.module';
     ServeStaticModule.forRoot({
       rootPath: '/var/www/html/profile',
       serveRoot: '/uploads/profile',
+    }),
+    ServeStaticModule.forRoot({
+      rootPath: '/var/www/html/institute',
+      serveRoot: '/uploads/institute',
     }),
     MongooseModule.forRoot('mongodb+srv://pipaliyayakshat:74wpEPgI9qRwSbIF@nestjs-crud.9fpkn1c.mongodb.net/student-portal', {
       connectionFactory: (connection) => {
@@ -27,6 +32,7 @@ import { AuthModule } from './auth/auth.module';
     AttendanceModule,
     ProfileModule,
     AuthModule,
+    InstituteModule,
   ],
   controllers: [AppController],
   providers: [AppService],
